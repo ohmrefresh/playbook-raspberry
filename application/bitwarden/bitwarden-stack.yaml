@@ -1,0 +1,28 @@
+version: '3.7'
+services:
+  bitwarden:
+    image: vaultwarden/server:latest
+    networks:
+      bitwarden:
+    environment: 
+      ADMIN_TOKEN: 'GQI0K4ruH/xVP/Cvk3pl7GIvN7HbB17WYBdlBn+HbNhJojehCJ46QMj9KtUPjjZB'
+      ROCKET_TLS: '{certs="/ssl/bitwarden.crt",key="/ssl/bitwarden.key"}'
+    ports:
+      - 8082:80
+    volumes:
+      - /etc/ssl/certs:/ssl
+      - bitwarden_data:/data
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+         condition: on-failure
+
+volumes:
+  bitwarden_data:
+    external: true
+
+networks:
+  bitwarden:
+    driver: overlay
+    external: true

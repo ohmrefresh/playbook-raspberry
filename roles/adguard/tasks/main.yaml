@@ -1,0 +1,29 @@
+---
+- name: Creates directory adguard
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0777
+  with_items:
+  - /data/adguard/work
+  - /data/adguard/conf
+
+- name: "Copy adguard"
+  copy:
+    src: application/adguard/AdGuardHome.yaml
+    dest: /data/adguard/conf/AdGuardHome.yaml
+    mode: 0777
+- name: "Copy adguard Config"
+  copy:
+    src: application/adguard
+    dest: /home/pi/application/
+- name: Tear down existing services
+  community.docker.docker_compose:
+    project_src: /home/pi/application/adguard
+    state: absent
+- name: deploy Docker Compose stack
+  docker_compose:
+    project_src: /home/pi/application/adguard
+    files:
+    - docker-compose.yaml
+

@@ -1,0 +1,92 @@
+---
+
+- name: Enable container features
+  replace:
+    path: /boot/cmdline.txt
+    regexp: '^([\w](?!.*\b{{ item }}\b).*)$'
+    replace: '\1 {{ item }}'
+  with_items:
+    - "cgroup_enable=cpuset"
+    - "cgroup_memory=1"
+    - "cgroup_enable=memory"
+
+- name: Reboot
+  reboot:
+    reboot_timeout: 3600
+
+- name: Check timezone
+  shell: cat /etc/timezone
+  register: current_timezone
+- name: set timezone
+  timezone:
+    name: 'Asia/Bangkok'
+- name: get docker convenience script
+  shell: curl -fsSL https://get.docker.com -o get-docker.sh
+  args:
+    creates: /home/pi/get-docker.sh
+- name: Chmod 755
+  shell: |
+    chmod 755 /home/pi/get-docker.sh
+- name: install docker
+  shell: sh /home/pi/get-docker.sh
+  args:
+    creates: /usr/bin/docker
+- name: make pi user execute docker commands
+  shell: usermod -aG docker pi
+
+- name: 'prepare default daemon configuration'
+  copy:
+    src: 'application/docker/daemon.json'
+    dest: '/etc/docker/daemon.json'
+
+# - name: set python3
+#   shell: |
+#     rm /usr/bin/python
+#     ln -s /usr/bin/python3 /usr/bin/python
+#     ln -s /usr/bin/pip3 /usr/bin/pip
+
+# - name: Remove file (delete file)
+#   ansible.builtin.file:
+#     path: /usr/bin/python
+#     state: absent
+
+# - name: Create symbolic link python3
+#   file:
+#     src: "/usr/bin/python3"
+#     dest: "/usr/bin/python"
+#     state: link
+#     force: yes
+
+# - name: Create symbolic link pip3
+#   file:
+#     src: "/usr/bin/pip3"
+#     dest: "/usr/bin/pip"
+#     state: link
+#     force: yes
+
+- name: Install a list of packages
+  apt:
+    name: "{{ pkgstoinstall }}"
+    update_cache: yes
+- name: Remove python-configparser package
+  apt:
+    name: python-configparser
+    state: absent
+- name: install docker-compose
+  shell: pip3 install docker-compose
+  args:
+    creates: /usr/local/bin/docker-compose
+- name: enable docker
+  systemd:
+    name: docker
+    enabled: yes
+    masked: no  
+- name: Remove useless packages from the cache
+  apt:
+    autoclean: yes
+- name: Remove dependencies that are no longer required
+  apt:
+    autoremove: yes
+- name: Init a new swarm with default parameters
+  community.docker.docker_swarm:
+    state: present

@@ -1,0 +1,32 @@
+---
+- name: Update apt repo and cache on all 
+  apt: update_cache=yes force_apt_get=yes cache_valid_time=3600
+- name: Upgrade all packages on servers
+  apt: upgrade=dist force_apt_get=yes    
+
+- name: Ensure a locale exists
+  community.general.locale_gen:
+    name: en_US.UTF-8
+    state: present
+
+- name: Enable IPv4 forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+    state: present
+    reload: yes
+
+- name: Enable IPv6 forwarding
+  sysctl:
+    name: net.ipv6.conf.all.forwarding
+    value: "1"
+    state: present
+    reload: yes
+
+
+- name: Creates directory application
+  file:
+    path: /home/pi/
+    state: application
+
+      

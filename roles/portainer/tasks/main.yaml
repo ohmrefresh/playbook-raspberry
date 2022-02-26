@@ -1,0 +1,44 @@
+---
+- name: Create secret portainer.sslcert
+  docker_secret:
+    name: portainer.sslcert
+    data: "{{ lookup('file', 'certs/bitwarden.crt') }}"
+    state: present
+- name: Create secret portainer.sslkey
+  docker_secret:
+    name: portainer.sslkey
+    data: "{{ lookup('file', 'certs/bitwarden.key') }}"
+    state: present
+- name: "Copy portainer-agent-stack.yaml"
+  copy:
+    src: application/portainer/portainer-agent-stack.yaml 
+    dest: /home/pi/application/portainer-agent-stack.yaml
+
+- name: Create a volume
+  docker_volume:
+    name: portainer_data
+        
+- name: Create Docker Network
+  docker_network:
+    state: present
+    name: portainer
+    driver: overlay
+
+- name: Install latest docker python bindings
+  pip:
+    name: "{{ packages }}"
+    executable: pip
+    state: latest
+  vars:
+    packages:
+      - docker
+      - jsondiff ##check if needed, I know it is for swarm but don't know about compose
+      - pyyaml ##check if needed, I know it is for swarm but don't know about compose
+  become: true
+
+- name: Deploy stack portainer
+  docker_stack:
+    state: present
+    name: portainer
+    compose:
+      - /home/pi/application/portainer-agent-stack.yaml

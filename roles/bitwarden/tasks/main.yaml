@@ -1,0 +1,22 @@
+---
+- name: "Copy monitoring-stack.yaml"
+  copy:
+    src: application/bitwarden/bitwarden-stack.yaml
+    dest: /home/pi/application/bitwarden-stack.yaml
+
+
+- name: Create a bitwarden
+  docker_network:
+    name: bitwarden
+    driver: overlay
+    
+- name: Create a volume bitwarden_data
+  docker_volume:
+    name: bitwarden_data
+
+- name: Deploy stack bitwarden
+  docker_stack:
+    state: present
+    name: bitwarden
+    compose:
+      - /home/pi/application/bitwarden-stack.yaml

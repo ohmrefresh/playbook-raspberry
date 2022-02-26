@@ -1,0 +1,9 @@
+---
+- name: Install argon1.sh [Arfon1 Model]
+  shell: |
+    wget https://download.argon40.com/argon1.sh
+    chmod 755 argon1.sh
+    ./argon1.sh
+- name: Reboot a slow machine that might have lots of updates to apply
+  reboot:
+    reboot_timeout: 3600
