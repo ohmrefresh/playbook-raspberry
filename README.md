@@ -1,9 +1,15 @@
 # playbook-raspberry
 
-1) Flash rasbian image to sd card
-2) Enable ssh
+1. Flash rasbian image to sd card
+2. Enable ssh
+```bash
 touch /Volumes/boot/ssh
-3) Install ansible
+```
+3. Install ansible
+```bash
 sudo pip3 install ansible
-4) Apply ansible
+```
+4. Apply ansible
+```bash
  ansible-playbook playbook.yaml -i hosts.ini
+ ```
