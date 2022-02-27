@@ -24,3 +24,6 @@ https://{{ip}}:8082/
 
 ### Adguard
 http://{{ip}}:9999/
+
+### uptime-kuma
+http://{{ip}}:3001/

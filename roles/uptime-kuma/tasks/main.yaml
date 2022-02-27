@@ -1,0 +1,16 @@
+---
+- name: "Copy stack.yaml"
+  copy:
+    src: application/uptime-kuma/uptime-kuma-stack.yaml
+    dest: /home/pi/application/uptime-kuma-stack.yaml
+
+- name: Create a volume
+  docker_volume:
+    name: uptime-kuma
+
+- name: Deploy stack monitoring
+  docker_stack:
+    state: present
+    name: uptime-kuma
+    compose:
+      - /home/pi/application/uptime-kuma-stack.yaml
