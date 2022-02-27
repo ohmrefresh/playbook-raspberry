@@ -13,3 +13,14 @@ sudo pip3 install ansible
 ```bash
  ansible-playbook playbook.yaml -i hosts.ini
  ```
+
+
+##Application
+### Portainer
+http://{{ip}}:9000/
+
+### Bitwarden
+https://{{ip}}:8082/
+
+### Adguard
+http://{{ip}}:9999/
