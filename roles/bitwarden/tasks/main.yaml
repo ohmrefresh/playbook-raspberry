@@ -14,6 +14,16 @@
   docker_volume:
     name: bitwarden_data
 
+- name: 'Copy bitwarden.crt'
+  copy:
+    src: 'certs/bitwarden.crt'
+    dest: '/etc/ssl/certs/bitwarden.crt'
+
+- name: 'Copy bitwarden.key'
+  copy:
+    src: 'certs/bitwarden.key'
+    dest: '/etc/ssl/certs/bitwarden.key'
+
 - name: Deploy stack bitwarden
   docker_stack:
     state: present
